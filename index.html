@@ -227,7 +227,7 @@
       <span class="key">MOUSE</span>
     </div>
     <div class="divider"></div>
-    <span class="instruction">Click to start exploring</span>
+    <span class="instruction">Press WASD or click to start</span>
   </div>
 
   <script type="importmap">
@@ -297,10 +297,10 @@
     backLight.position.set(0, 5, -10);
     scene.add(backLight);
 
-    // First-person controls (click to activate)
+    // First-person controls (auto-activates on key press or click)
     const controls = new PointerLockControls(camera, document.body);
 
-    // Click to start walking
+    // Click to start (optional - keys also work)
     document.body.addEventListener('click', () => {
       controls.lock();
     });
@@ -434,6 +434,12 @@
     }
 
     document.addEventListener('keydown', (e) => {
+      // Auto-lock controls when movement keys are pressed
+      const isMovementKey = ['KeyW', 'KeyS', 'KeyA', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code);
+      if (isMovementKey && !controls.isLocked) {
+        controls.lock();
+      }
+
       switch(e.code) {
         case 'KeyW': case 'ArrowUp':
           moveState.forward = true;
