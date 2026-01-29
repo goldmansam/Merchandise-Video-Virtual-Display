@@ -900,7 +900,7 @@
 
         // If path waypoints exist, follow the path
         if (pathWaypoints.length >= 2) {
-          const speed = 0.06; // Speed along path
+          const speed = 0.05; // Speed along path
           const spacing = 0.2; // Spacing between items (0-1 range)
 
           // Calculate position along path (0 to 1)
@@ -920,12 +920,8 @@
           const isFrontSegment = (currentSegment === 5);
           const isNearStoppingPoint = (segmentT >= 0.55 && segmentT <= 0.65);
 
-          // Apply easing only when not at presentation stopping points
+          // Use linear interpolation for smooth, constant-speed movement
           let interpolationT = segmentT;
-          if (!isFrontSegment || !isNearStoppingPoint || userHasStartedExploring) {
-            // Apply gentle sine-based easing for smoother, more natural motion
-            interpolationT = -(Math.cos(Math.PI * segmentT) - 1) / 2;
-          }
 
           // Interpolate position
           item.container.position.x = start.x + (end.x - start.x) * interpolationT;
