@@ -263,11 +263,6 @@
       <span class="key">MOUSE</span>
     </div>
     <div class="divider"></div>
-    <div class="control-group">
-      <span class="control-label">Replay:</span>
-      <span class="key">R</span>
-    </div>
-    <div class="divider"></div>
     <span class="instruction">Press WASD or click to start</span>
   </div>
 
@@ -541,22 +536,6 @@
           });
           console.log(`Position (x: ${camera.position.x.toFixed(2)}, y: ${camera.position.y.toFixed(2)}, z: ${camera.position.z.toFixed(2)})`);
           break;
-        case 'KeyR': // Press R to start/stop playback
-          if (!isPlayingBack && recordedPath.length > 0) {
-            // Start playback
-            isPlayingBack = true;
-            isRecordingMovement = false;
-            playbackIndex = 0;
-            playbackStartTime = Date.now();
-            controls.unlock(); // Unlock controls during playback
-            console.log(`🎬 Starting playback of ${recordedPath.length} recorded positions`);
-          } else if (isPlayingBack) {
-            // Stop playback
-            isPlayingBack = false;
-            isRecordingMovement = true;
-            console.log('⏹️ Playback stopped, recording resumed');
-          }
-          break;
       }
     });
 
@@ -625,15 +604,6 @@
     let userHasStartedExploring = false;
     let startingCameraPosition = null;
     let startingCameraRotation = null;
-
-    // Movement recording and playback system
-    const recordedPath = [];
-    let isRecordingMovement = true; // Auto-record from start
-    let isPlayingBack = false;
-    let playbackIndex = 0;
-    let playbackStartTime = 0;
-    const RECORDING_INTERVAL = 100; // Record every 100ms
-    let lastRecordTime = 0;
 
     // Load the clothing store
     loader.load('clothing_store.glb', (gltf) => {
@@ -951,56 +921,6 @@
 
       // Update walking sound based on movement
       updateWalkingSound();
-
-      // Recording system - record camera positions periodically
-      if (isRecordingMovement && controls.isLocked && Date.now() - lastRecordTime > RECORDING_INTERVAL) {
-        recordedPath.push({
-          position: camera.position.clone(),
-          rotation: {
-            x: camera.rotation.x,
-            y: camera.rotation.y,
-            z: camera.rotation.z
-          },
-          timestamp: Date.now()
-        });
-        lastRecordTime = Date.now();
-      }
-
-      // Playback system - replay recorded path
-      if (isPlayingBack && recordedPath.length > 0) {
-        const playbackTime = Date.now() - playbackStartTime;
-        const recordingDuration = recordedPath[recordedPath.length - 1].timestamp - recordedPath[0].timestamp;
-
-        // Loop the playback
-        const loopTime = playbackTime % recordingDuration;
-
-        // Find the two frames to interpolate between
-        let frameIndex = 0;
-        for (let i = 0; i < recordedPath.length - 1; i++) {
-          const frameTime = recordedPath[i].timestamp - recordedPath[0].timestamp;
-          const nextFrameTime = recordedPath[i + 1].timestamp - recordedPath[0].timestamp;
-          if (loopTime >= frameTime && loopTime < nextFrameTime) {
-            frameIndex = i;
-            break;
-          }
-        }
-
-        const currentFrame = recordedPath[frameIndex];
-        const nextFrame = recordedPath[Math.min(frameIndex + 1, recordedPath.length - 1)];
-
-        // Interpolate between frames for smooth playback
-        const frameTime = currentFrame.timestamp - recordedPath[0].timestamp;
-        const nextFrameTime = nextFrame.timestamp - recordedPath[0].timestamp;
-        const t = (loopTime - frameTime) / (nextFrameTime - frameTime) || 0;
-
-        // Smoothly interpolate position
-        camera.position.lerpVectors(currentFrame.position, nextFrame.position, t);
-
-        // Smoothly interpolate rotation
-        camera.rotation.x = currentFrame.rotation.x + (nextFrame.rotation.x - currentFrame.rotation.x) * t;
-        camera.rotation.y = currentFrame.rotation.y + (nextFrame.rotation.y - currentFrame.rotation.y) * t;
-        camera.rotation.z = currentFrame.rotation.z + (nextFrame.rotation.z - currentFrame.rotation.z) * t;
-      }
 
       // Check if user has started exploring (moved away from start)
       if (startingCameraPosition && !userHasStartedExploring) {
