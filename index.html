@@ -858,27 +858,28 @@
         time += 0.01;
       }
 
-      // Handle Arrow Key movement
+      // Handle WASD movement
       if (controls.isLocked) {
         const direction = new THREE.Vector3();
         camera.getWorldDirection(direction);
         direction.y = 0; // Keep movement horizontal
         direction.normalize();
 
-        const right = new THREE.Vector3();
-        right.crossVectors(camera.up, direction).normalize();
-
+        // Forward/Backward movement
         if (moveState.forward) {
           camera.position.addScaledVector(direction, moveSpeed);
         }
         if (moveState.backward) {
           camera.position.addScaledVector(direction, -moveSpeed);
         }
+
+        // Turn left/right (rotate camera)
+        const rotationSpeed = 0.02;
         if (moveState.left) {
-          camera.position.addScaledVector(right, moveSpeed); // Reversed for correct left movement
+          controls.getObject().rotation.y += rotationSpeed;
         }
         if (moveState.right) {
-          camera.position.addScaledVector(right, -moveSpeed); // Reversed for correct right movement
+          controls.getObject().rotation.y -= rotationSpeed;
         }
       }
 
