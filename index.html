@@ -122,6 +122,39 @@
       border-color: rgba(255, 255, 255, 0.5);
     }
 
+    #title-overlay {
+      position: fixed;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 25px 50px;
+      opacity: 0;
+      transition: opacity 1s ease;
+      font-family: 'Work Sans', sans-serif;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      z-index: 2000;
+      pointer-events: none;
+    }
+
+    #title-overlay.visible {
+      opacity: 1;
+    }
+
+    #title-overlay h1 {
+      margin: 0;
+      font-size: 36px;
+      font-weight: 700;
+      color: #ffffff;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      letter-spacing: 0.5px;
+    }
+
     #controls-menu {
       position: fixed;
       bottom: 20px;
@@ -200,6 +233,9 @@
 </head>
 <body>
   <div id="canvas-container"></div>
+  <div id="title-overlay">
+    <h1>Merchandise Graphic Design: Virtual Display</h1>
+  </div>
   <div id="info-card">
     <h2 id="card-title"></h2>
     <p class="label">Inspiration:</p>
@@ -305,6 +341,7 @@
       controls.lock();
     });
 
+    let titleShown = false;
     controls.addEventListener('lock', () => {
       console.log('Controls locked - use WASD to move, mouse to look around');
       // Keep menu visible so key highlighting is shown
@@ -312,6 +349,18 @@
       const instruction = menu.querySelector('.instruction');
       if (instruction) {
         instruction.style.display = 'none';
+      }
+
+      // Show title on first lock
+      if (!titleShown) {
+        titleShown = true;
+        const titleOverlay = document.getElementById('title-overlay');
+        titleOverlay.classList.add('visible');
+
+        // Fade out after 4 seconds
+        setTimeout(() => {
+          titleOverlay.classList.remove('visible');
+        }, 4000);
       }
     });
 
