@@ -346,9 +346,10 @@
     }
 
     // Walking sound effect
-    const walkingSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2385/2385-preview.mp3');
+    const walkingSound = new Audio('https://cdn.pixabay.com/download/audio/2022/03/10/audio_4dedf2f87f.mp3');
     walkingSound.loop = true;
-    walkingSound.volume = 0.3;
+    walkingSound.volume = 0.15;
+    walkingSound.playbackRate = 1.2;
     let isWalking = false;
 
     function updateWalkingSound() {
