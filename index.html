@@ -990,12 +990,12 @@
               console.log('New cycle started');
             }
           } else {
-            // EXPLORATION MODE: Walk into item to trigger (no rotation, just stop and show)
+            // EXPLORATION MODE: Walk into item to trigger with spinning
             if (presentationPhase === 'moving' &&
                 distanceToPlayer < WALK_INTO_DISTANCE &&
                 controls.isLocked) {
 
-              // Skip rotation, go straight to displaying
+              // Trigger displaying with spinning animation
               presentationPhase = 'displaying';
               presentingItemIndex = index;
               showInfoCard(item, index, true); // true = show buttons
@@ -1004,16 +1004,17 @@
             }
           }
 
-          // Only update rotation if not in presentation mode
+          // Handle rotation
           if (presentationPhase === 'moving' || presentingItemIndex !== index) {
-            // Face direction of movement
+            // Normal movement: face direction of movement
             const dx = end.x - start.x;
             const dz = end.z - start.z;
             const baseRotation = Math.atan2(dx, dz);
-
-            // Add 180-degree rotation along the path (full rotation per complete path loop)
-            const additionalRotation = progress * Math.PI * 2; // Full 360-degree rotation per loop
+            const additionalRotation = progress * Math.PI * 2;
             item.container.rotation.y = baseRotation + additionalRotation;
+          } else if (userHasStartedExploring && presentingItemIndex === index && presentationPhase === 'displaying') {
+            // Exploration mode: spin continuously when displaying
+            item.container.rotation.y += 0.02;
           }
         } else {
           // No path - just rotate in place
