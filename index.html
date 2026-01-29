@@ -345,6 +345,25 @@
       }
     }
 
+    // Walking sound effect
+    const walkingSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2385/2385-preview.mp3');
+    walkingSound.loop = true;
+    walkingSound.volume = 0.3;
+    let isWalking = false;
+
+    function updateWalkingSound() {
+      const moving = controls.isLocked && (moveState.forward || moveState.backward || moveState.left || moveState.right);
+
+      if (moving && !isWalking) {
+        walkingSound.play().catch(e => console.log('Audio play failed:', e));
+        isWalking = true;
+      } else if (!moving && isWalking) {
+        walkingSound.pause();
+        walkingSound.currentTime = 0;
+        isWalking = false;
+      }
+    }
+
     // Path creation for clothing movement
     const pathWaypoints = [
       {
@@ -855,6 +874,9 @@
           camera.position.addScaledVector(right, -moveSpeed); // Reversed for correct right movement
         }
       }
+
+      // Update walking sound based on movement
+      updateWalkingSound();
 
       // Check if user has started exploring (moved away from start)
       if (startingCameraPosition && !userHasStartedExploring) {
