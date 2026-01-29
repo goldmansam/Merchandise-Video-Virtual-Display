@@ -341,7 +341,6 @@
       controls.lock();
     });
 
-    let titleShown = false;
     controls.addEventListener('lock', () => {
       console.log('Controls locked - use WASD to move, mouse to look around');
       // Keep menu visible so key highlighting is shown
@@ -349,18 +348,6 @@
       const instruction = menu.querySelector('.instruction');
       if (instruction) {
         instruction.style.display = 'none';
-      }
-
-      // Show title on first lock
-      if (!titleShown) {
-        titleShown = true;
-        const titleOverlay = document.getElementById('title-overlay');
-        titleOverlay.classList.add('visible');
-
-        // Fade out after 4 seconds
-        setTimeout(() => {
-          titleOverlay.classList.remove('visible');
-        }, 4000);
       }
     });
 
@@ -1087,6 +1074,17 @@
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // Show title overlay immediately on page load
+    window.addEventListener('load', () => {
+      const titleOverlay = document.getElementById('title-overlay');
+      titleOverlay.classList.add('visible');
+
+      // Fade out after 4 seconds
+      setTimeout(() => {
+        titleOverlay.classList.remove('visible');
+      }, 4000);
     });
 
     animate();
